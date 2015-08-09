@@ -1,12 +1,17 @@
 NAME =			a.out
 
 SRCS =			\
-				main.c \
+			main.c \
 
 #TYPE: LIB or PROGRAM
 TYPE =			PROGRAM
 
-CC =			gcc
+#OS: LINUX/OSX or WINDOWS
+OS =			LINUX
+
+UNIX_CC =		gcc
+WIN_CC =		i686-w64-mingw32-gcc
+
 EXTENTION =		c
 
 CFLAGS =		-Wall -Werror -Wextra
@@ -14,13 +19,20 @@ CFLAGS =		-Wall -Werror -Wextra
 LIB_NAMES =		-lesdl
 LIB_PATH =		./ESDL_Lib/
 
-LIB_SUPP =		`sdl2-config --libs` -lSDL2_image -lm
+ifeq ($(OS), WINDOWS)
+SDL2_WIN_PATH =		$(shell pwd)/ESDL_Lib/SDL2
+LIB_SUPP_INC =		`$(SDL2_WIN_PATH)/bin/sdl2-config --prefix=$(SDL2_WIN_PATH) --cflags`
+LIB_SUPP =		`$(SDL2_WIN_PATH)/bin/sdl2-config --prefix=$(SDL2_WIN_PATH) --libs`
+else
 LIB_SUPP_INC =		`sdl2-config --cflags`
+LIB_SUPP =		`sdl2-config --libs`
+endif
 
 SRC_PATH = 		./srcs/
 INC_PATH = 		./includes/
 OBJ_PATH =		./obj/
 
+CC =			$(UNIX_CC)
 OBJ_NAME = $(SRCS:.$(EXTENTION)=.o)
 SRC = $(addprefix $(SRC_PATH), $(SRCS))
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_NAME))
@@ -29,6 +41,12 @@ INC = $(addprefix -I, $(INC_PATH))
 INC += $(LIB_SUPP_INC)
 LDFLAGS = $(LIB) $(LIB_NAMES)
 EMPTY =
+
+ifeq ($(OS), WINDOWS)
+NAME := $(NAME).exe
+CC = $(WIN_CC)
+else
+endif
 
 all: libs name $(OBJ) done $(NAME)
 
