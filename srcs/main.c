@@ -57,7 +57,6 @@ int					main(int argc, char **argv)
 	init(&data);
 	while (esdl.run)
 	{
-		Esdl_update_window_info(&esdl);
 		Esdl_update_events(&esdl.en.in, &esdl.run);
 
 		test(&data);
