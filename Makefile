@@ -1,4 +1,3 @@
-
 #CONFIG
 	SRCS =			main.c \
 
@@ -21,8 +20,8 @@
 		LIB_NAMES = -lesdl
 		LIB_PATH =	./ESDL_Lib/
 	#OTHER LIB
-		LIB_SUPP = -L/usr/lib/x86_64-gnu -lSDL2
-		LIB_SUPP_INC = -I/usr/include/SDL2
+		LIB_SUPP = `sdl2-config --libs`
+		LIB_SUPP_INC = `sdl2-config --cflags`
 	#TEXT
 		COMPILING_OBJECTS = "\033[4;7mCompiling Objects:\033[0m [$(NAME)]\n"
 		COMPILING_BINARY = "\033[4;7mCompiling binary:\033[0m [$(NAME)]\n"
@@ -37,33 +36,33 @@
 	#LIB
 		LIB_INC = $(addprefix -I, $(addsuffix includes, $(LIB_PATH)))
 		LIB = $(addprefix -L, $(LIB_PATH))
-		INC += $(LIB_SUPP_INC)
+		INC += $(LIB_INC) $(LIB_SUPP_INC)
 		LDFLAGS = $(LIB) $(LIB_NAMES) $(LIB_SUPP)
 		EMPTY =
 
 all: libs name $(OBJ) done $(NAME)
 
-$(NAME):
+$(NAME): $(OBJ)
 	@ printf $(COMPILING_BINARY)
 	@ printf $(COMILING_PROGRESS)
 ifeq ($(TYPE), LIB)
 	@ ar -rc $(NAME) $(OBJ)
 	@ ranlib $(NAME)
 else
-	@ $(CC) $(OBJ) $(LDFLAGS) -o $(NAME)
+	@ $(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $(NAME)
 endif
 	@ printf $(COMPILING_DONE)
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.$(EXTENTION)
 	@ printf $(COMILING_PROGRESS)
 	@ mkdir -p $(OBJ_PATH) 2> /dev/null
-	@ $(CC) $(INC) $(LIB_INC) -c $< -o $@
+	@ $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 #COMPILING SUBLIBS
 ifeq ($(LIB_PATH), $(EMPTY))
 else
 libs:
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make -C $(lib) > /dev/null ;)
 endif
 
 clean:
@@ -72,7 +71,7 @@ clean:
 #CLEANING SUBLIBS
 ifeq ($(LIB_PATH), $(EMPTY))
 else
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make clean > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make clean -C $(lib) > /dev/null ;)
 endif
 
 fclean: clean
@@ -81,7 +80,7 @@ fclean: clean
 #FCLEANING SUBLIBS
 ifneq ($(LIB_PATH), $(EMPTY))
 else
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make fclean > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make fclean -C $(lib) > /dev/null ;)
 endif
 
 re: fclean all
