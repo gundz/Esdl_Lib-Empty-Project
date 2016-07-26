@@ -59,29 +59,18 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.$(EXTENTION)
 	@ $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 #COMPILING SUBLIBS
-ifeq ($(LIB_PATH), $(EMPTY))
-else
 libs:
-	@ $(foreach lib, $(LIB_PATH), make -C $(lib) > /dev/null ;)
-endif
+	@ $(foreach lib, $(LIB_PATH), make -sC $(lib) ;)
 
 clean:
 	@ rm -rf $(OBJ_PATH)
 	@ printf $(COMPILING_CLEAN)
-#CLEANING SUBLIBS
-ifeq ($(LIB_PATH), $(EMPTY))
-else
-	@ $(foreach lib, $(LIB_PATH), make clean -C $(lib) > /dev/null ;)
-endif
+	@ $(foreach lib, $(LIB_PATH), make clean -sC $(lib) ;) #CLEANING SUBLIBS
 
 fclean: clean
 	@ rm -rf $(NAME)
 	@ printf $(COMPILING_FCLEAN)
-#FCLEANING SUBLIBS
-ifneq ($(LIB_PATH), $(EMPTY))
-else
-	@ $(foreach lib, $(LIB_PATH), make fclean -C $(lib) > /dev/null ;)
-endif
+	@ $(foreach lib, $(LIB_PATH), make fclean -sC $(lib) ;) #FCLEANING SUBLIBS
 
 re: fclean all
 
