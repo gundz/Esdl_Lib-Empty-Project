@@ -34,8 +34,8 @@ void				init(t_data *data)
 	SDL_Surface		*surf;
 	SDL_Rect		rect = {0, 0, SIZE_X, SIZE_Y};
 
-	surf = Esdl_create_surface(SIZE_X, SIZE_Y);
-	Esdl_draw_square(surf, rect, 0xFFFFFFFF);
+	surf = esdl_create_surface(SIZE_X, SIZE_Y);
+	esdl_draw_square(surf, rect, 0xFFFFFFFF);
 	data->square = SDL_CreateTextureFromSurface(data->esdl->en.ren, surf);
 	SDL_FreeSurface(surf);
 }
@@ -52,20 +52,20 @@ int					main(int argc, char **argv)
 
 	data.esdl = &esdl;
 
-	if (Esdl_init(&esdl, 640, 480, 60, "Engine") == -1)
+	if (esdl_init(&esdl, 640, 480, "Engine") == -1)
 		return (-1);
 	init(&data);
 	while (esdl.run)
 	{
-		Esdl_update_events(&esdl.en.in, &esdl.run);
+		esdl_update_events(&esdl.en.in, &esdl.run);
 
 		test(&data);
 
-		Esdl_fps_limit(&esdl);
-		Esdl_fps_counter(&esdl);
+		esdl_fps_limit(&esdl);
+		esdl_fps_counter(&esdl);
 	}
 	quit(&data);
-	Esdl_quit(&esdl);
+	esdl_quit(&esdl);
 	(void)argc;
 	(void)argv;
 	return (0);
